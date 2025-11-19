@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Калькулятор</title>
+    <style>
+      .container {
+        max-width: 390px;
+        margin: 0 auto;
+      }
+      body {
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Калькулятор стоимости</h2>
+
+      Количество:<br />
+      <input type="text" id="quantity" oninput="calculate()" /><br /><br />
+
+      Тип услуги:<br />
+      <label
+        ><input
+          type="radio"
+          name="type"
+          value="1"
+          onclick="showFormAndCalculate()"
+        />
+        Тип 1</label
+      ><br />
+      <label
+        ><input
+          type="radio"
+          name="type"
+          value="2"
+          onclick="showFormAndCalculate()"
+        />
+        Тип 2</label
+      ><br />
+      <label
+        ><input
+          type="radio"
+          name="type"
+          value="3"
+          onclick="showFormAndCalculate()"
+        />
+        Тип 3</label
+      ><br /><br />
+
+      <!-- Опции (показываются только для типа 2) -->
+      <div id="optionsDiv" style="display: none">
+        Опция:<br />
+        <select id="option" onchange="calculate()">
+          <option value="0">Без опции (+0 руб.)</option>
+          <option value="50">Опция A (+50 руб.)</option>
+          <option value="100">Опция B (+100 руб.)</option></select
+        ><br /><br />
+      </div>
+
+      <!-- Свойство (только для типа 3) -->
+      <div id="propertyDiv" style="display: none">
+        <label
+          ><input type="checkbox" id="prop" onclick="calculate()" /> Свойство
+          (+75 руб.)</label
+        ><br /><br />
+      </div>
+
+      <!-- Кнопка удалена -->
+
+      <div id="error" style="color: red"></div>
+      <div id="result" style="color: green; font-weight: bold"></div>
+    </div>
+
+    <script>
+      // Показывает нужные блоки И запускает расчёт
+      function showFormAndCalculate() {
+        const type2 = document.querySelector('input[value="2"]').checked;
+        const type3 = document.querySelector('input[value="3"]').checked;
+
+        document.getElementById("optionsDiv").style.display = type2
+          ? "block"
+          : "none";
+        document.getElementById("propertyDiv").style.display = type3
+          ? "block"
+          : "none";
+
+        calculate(); // пересчитываем сразу после смены типа
+      }
+
+      function calculate() {
+        const qty = document.getElementById("quantity").value;
+        const errorDiv = document.getElementById("error");
+        const resultDiv = document.getElementById("result");
+
+        errorDiv.innerHTML = "";
+        resultDiv.innerHTML = "";
+
+        // Если поле пустое — не ругаемся, просто очищаем результат
+        if (qty === "") {
+          return;
+        }
+
+        // Проверка: только целые положительные числа
+        if (!/^\d+$/.test(qty)) {
+          errorDiv.innerHTML = "Введите целое положительное число!";
+          return;
+        }
+
+        const quantity = parseInt(qty);
+        let price = 0;
+
+        if (document.querySelector('input[value="1"]').checked) {
+          price = 100;
+        } else if (document.querySelector('input[value="2"]').checked) {
+          price = 150;
+          price += parseInt(document.getElementById("option").value);
+        } else if (document.querySelector('input[value="3"]').checked) {
+          price = 200;
+          if (document.getElementById("prop").checked) {
+            price += 75;
+          }
+        }
+
+        const total = price * quantity;
+        resultDiv.innerHTML = "Стоимость заказа: " + total + " руб.";
+      }
+
+      // Инициализация при загрузке
+      showFormAndCalculate();
+    </script>
+  </body>
+</html>
